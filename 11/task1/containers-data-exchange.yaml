@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-exchange
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-exchange
+  template:
+    metadata:
+      labels:
+        app: data-exchange
+    spec:
+      containers:
+      - name: output
+        image: busybox
+        command: ["/bin/sh", "-c"] 
+        args: ["echo $(date) > output/file; sleep 3600"]
+        volumeMounts:
+        - name: exchange
+          mountPath: /output
+      - name: input
+        image: wbitt/network-multitool
+        volumeMounts:
+        - name: exchange
+          mountPath: /input
+      volumes:
+      - name: exchange
+        emptyDir: {} 
